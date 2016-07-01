@@ -17,13 +17,13 @@ public class Producer extends Thread {
     private final Properties props = new Properties();
 
     
-    public Producer(String name, String topic, int numsOfMessage) {
+    public Producer(String name, String topic, int numsOfMessage, String brokerlist) {
 
         props.put("serializer.class", "kafka.serializer.StringEncoder");
-        props.put("metadata.broker.list", "192.168.40.158:9092");
+        props.put("metadata.broker.list", brokerlist);
         //async send
         props.put("producer.type", "async");
-//         the message number each sending 
+        // the message batch size
         props.put("batch.num.messages", "5");
         producer = new kafka.javaapi.producer.Producer<Integer, String>(new ProducerConfig(props));
 
@@ -38,7 +38,7 @@ public class Producer extends Thread {
     public void run() {
 
         int messageNo = 1;
-        while (messageNo <= numsOfMessage) { // ；
+        while (messageNo <= numsOfMessage) { 
 
             String message = new String(name + "'s	Message_" + messageNo + "******");
             KeyedMessage<Integer, String> messageForSend = new KeyedMessage<Integer, String>(topic, message);

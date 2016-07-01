@@ -15,26 +15,26 @@ public class Consumer extends Thread
 {
     private final ConsumerConnector consumer;
     private final String topic;
+    private String groupid = "testgrp";
+    private String zk_address = "localhost:2181";
+    private String offset_reset = "largest";
 
-    public Consumer(String topic)
+    public Consumer(String topic,String groupid,String zk_address,String offset_reset)
     {
-        consumer = kafka.consumer.Consumer.createJavaConsumerConnector(
-                createConsumerConfig());
         this.topic = topic;
-    }
-
-    private static ConsumerConfig createConsumerConfig()
-    {
+        this.groupid = groupid;
+        this.zk_address = zk_address;
+        this.offset_reset = offset_reset;
         Properties props = new Properties();
-        props.put("zookeeper.connect","172.18.1.54:2181/kafka08");
-        props.put("group.id", "test00025");
+        props.put("zookeeper.connect",zk_address);
+        props.put("group.id",groupid);
         props.put("zookeeper.session.timeout.ms", "6000");
         props.put("zookeeper.sync.time.ms", "2000");
         props.put("auto.commit.interval.ms", "1000");
-//        props.put("auto.offset.reset", "smallest");
-
-        return new ConsumerConfig(props);
-
+        props.put("auto.offset.reset", offset_reset);
+        ConsumerConfig config = new ConsumerConfig(props);
+        consumer = kafka.consumer.Consumer.createJavaConsumerConnector(
+                config);
     }
 
     public void run() {
